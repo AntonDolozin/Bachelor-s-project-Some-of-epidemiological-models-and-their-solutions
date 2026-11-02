@@ -1,0 +1,1 @@
+# Bachelor-s-project-Some-of-epidemiological-models-and-their-solutions
