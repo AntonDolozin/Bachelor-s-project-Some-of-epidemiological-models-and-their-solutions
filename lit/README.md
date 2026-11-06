@@ -1,1 +1,1 @@
-This directory is dedicated to various literature and resources on epidemiological models and adjacent topics.
+This directory is dedicated to various literature and resources on epidemiological models and adjacent topics
