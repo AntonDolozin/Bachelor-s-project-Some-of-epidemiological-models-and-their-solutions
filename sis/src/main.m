@@ -1,6 +1,11 @@
+
+
 %Demo for academic advisor;
 %The defined structure will be used later in parser file (if possible)
 
+clc; 
+clear;
+close all;
 
 
 
@@ -14,6 +19,7 @@
 
 
 %initial conditions 
+results_table = table();
 time_span = input('Enter a timespan (two values): \n', 's');
 b = input('Enter beta parameter for system of differential equations: \n', 's');
 g = input('Enter gamma parameter for system of differential equations: \n', 's');
@@ -23,30 +29,82 @@ y0 = input('Enter initial conditions (two values): \n', 's');
 %dAdt = @(t, A, b, gamma) [-b*A(2)*A(1) + gamma*A(2); b*A(1)*A(2) - gamma*A(2)]
 %[t, A] = ode45(dAdt, [2, 3], [25; 6]);
 %------------------------------------
-time = zeros(2, 1)
+time = zeros(2, 1);
 tmp = sscanf(time_span, '%f,%f');
+
 time(1) = tmp(1);
 time(2) = tmp(2);
-tmp_initial_conditions  = sscanf(y0, '%f,%f')
-y0_converted = zeros(2, 1)
-y0_converted(1) = tmp_initial_conditions(1)
-y0_converted(2) = tmp_initial_conditions(2)
-b_converted = sscanf(b, '%f')
-g_converted = sscanf(g, '%f')
+tmp_initial_conditions  = sscanf(y0, '%f,%f');
+y0_converted = zeros(2, 1);
+y0_converted(1) = tmp_initial_conditions(1);
+y0_converted(2) = tmp_initial_conditions(2);
+b_converted = sscanf(b, '%f');
+g_converted = sscanf(g, '%f');
 
+% Gamma divided by beta. An endemic equilibrium exists if it is lesser than
+% one
+endemic_ratio = g_converted/b_converted;
 
 %Usually, ode45 is using for solving the systems of differential equations
-dSdt = odefun(t, A, b_converted, g_converted)
-[t, S] = ode45(dSdt, time, y0_converted)
-print([t, res])
-%Opening figure for plots
+[t, y] = ode45(@(t, A, beta, gamma)odefun(t, A, b_converted, g_converted), time, y0_converted);
+
+
+%Extracting the values of each function
+S = y(:, 1);
+I = y(:, 2);
+equilib_t = find(S==I, 1);
+equilib_exists = ~isempty(equilib_t);
+if equilib_exists == 1
+ equilib_val = interp1(t, S, equilib_t);
+end
+%Adding respective columns with results to table
+results_table.t = addvars(results_table, t);
+results_table.S = addvars(results_table, S);
+results_table.I = addvars(results_table, I);
+
+%Variables for legend
+leg = {'S(t)', 'I(t)'};
+number_of_columns = numel(leg);
+
+%Opening figure for plots 
 figure;
+hold on;
+sPlot =plot(t, S);
+iPlot = plot(t, I);
+
+%Setting
+sPlot.LineStyle = "-";
+sPlot.LineWidth =2;
+SColorCode = [100, 136, 234]./255;
+sPlot.Color =SColorCode;
+
+iPlot.LineStyle = '--';
+iplot.LineWidth =3;
+IColorCode = [0.9804, 0.7843, 0.5961];
+iPlot.Color=IColorCode;
+title("SIS model")
+
+if equilib_exists
+ equilibPlot = plot(equilib_t, equilib_val);
+ set(equilibPlot, 'Marker', 'o')
+ equilibPlot.MarkerSize=10;
+ equilibPlot.MarkerEdgeColor = [0.85 0.47 0.32]; % Marker outside boundaries color
+ equilibPlot.MarkerFaceColor = [0.1 0.25 0.89];
+end
+
+xlabel('t')
+legend(leg, 'Orientation','horizontal', 'Location', 'southwestoutside', NumColumns=number_of_columns)
+
+
+
+
+hold off;
 
 
 function dSdt = odefun(t, A, beta, gamma)
- dSdt = zeros(2, 1)
- dSdt(1) = -beta*A(1) *A(2) + gamma*A(2)
- dSdt(2) = beta*A(1)*A(2) - gamma*A(2)
+ dSdt = zeros(2, 1);
+ dSdt(1) = (-beta*A(1)*A(2)) + gamma*A(2);
+ dSdt(2) = (beta*A(1)*A(2)) - gamma*A(2);
 end
 
 
