@@ -21,9 +21,9 @@ close all;
 %initial conditions 
 results_table = table();
 time_span = input('Enter a timespan (two values): \n', 's');
-b = input('Enter beta parameter for system of differential equations: \n', 's');
-g = input('Enter gamma parameter for system of differential equations: \n', 's');
-y0 = input('Enter initial conditions (two values): \n', 's');
+b = input('Enter beta parameter for system of differential equations: (Nonzero, within [0,1] interval) \n', 's');
+g = input('Enter gamma parameter for system of differential equations: (Nonzero, within [0,1] interval) \n', 's');
+I0 = input('Enter initial condition for function of infected I(t) (between 0 and 1): \n', 's');
 
 %Remaining code from previous commits;
 %dAdt = @(t, A, b, gamma) [-b*A(2)*A(1) + gamma*A(2); b*A(1)*A(2) - gamma*A(2)]
@@ -34,62 +34,93 @@ tmp = sscanf(time_span, '%f,%f');
 
 time(1) = tmp(1);
 time(2) = tmp(2);
-tmp_initial_conditions  = sscanf(y0, '%f,%f');
-y0_converted = zeros(2, 1);
-y0_converted(1) = tmp_initial_conditions(1);
-y0_converted(2) = tmp_initial_conditions(2);
+tmp_I0  = sscanf(I0, '%f');
+S0 = 1- tmp_I0;
+y0= zeros(2, 1);
+y0(1) = S0;
+y0(2) = tmp_I0;
 b_converted = sscanf(b, '%f');
 g_converted = sscanf(g, '%f');
-% Gamma divided by beta. An a
+
+%Validating values from user
+assert((0<b_converted)&&(b_converted<1), 'Beta must be between 0 and 1.');
+assert((0<g_converted) &&(g_converted)<1, 'Gamma must be between 0 and 1.');
+assert((0<y0(1)) &&(y0(1)<1), 'Initial condition must be between 0 and 1.');
+assert(time(1)<time(2), 'Lower boundary of time span should be lesser than upper boundary.')
+
+% Gamma divided by beta. An endemic equilibrium exists if it is lesser than
+% one
 endemic_ratio = g_converted/b_converted;
 
 %Usually, ode45 is using for solving the systems of differential equations
-[t, y] = ode45(@(t, A, beta, gamma)odefun(t, A, b_converted, g_converted), time, y0_converted);
+[t, y] = ode45(@(t, A, beta, gamma)odefun(t, A, b_converted, g_converted), time, y0);
 
 
 %Extracting the values of each function
 S = y(:, 1);
 I = y(:, 2);
-equilib_t = find(S==I, 1);
-equilib_exists = ~isempty(equilib_t);
-if equilib_exists == 1
- equilib_val = interp1(t, S, equilib_t);
-end
+
+
+%equilib_t = find(S==I, 1)
+%equilib_exists = isempty(equilib_t)
+%if equilib_exists == 0
+ %equilib_val = interp1(t, S, equilib_t);
+%end
+
+
+
 %Adding respective columns with results to table
-results_table.t = addvars(results_table, t);
-results_table.S = addvars(results_table, S);
-results_table.I = addvars(results_table, I);
+results_table= addvars(results_table, t);
+results_table= addvars(results_table, S);
+results_table = addvars(results_table, I);
 
 %Variables for legend
 leg = {'S(t)', 'I(t)'};
+number_of_columns = numel(leg);
 
 %Opening figure for plots 
-figure;
+main_figure =figure;
+set(findall(main_figure, '-property', 'TickLabelInterpreter'), 'TickLabelInterpreter', 'latex');
 hold on;
 sPlot =plot(t, S);
 iPlot = plot(t, I);
-
-%Setting
+%Setting up the plot for S(t)
 sPlot.LineStyle = "-";
 sPlot.LineWidth =2;
 SColorCode = [100, 136, 234]./255;
 sPlot.Color =SColorCode;
 
+%Setting up the plot for I(t)
 iPlot.LineStyle = '--';
 iplot.LineWidth =3;
 IColorCode = [0.9804, 0.7843, 0.5961];
 iPlot.Color=IColorCode;
-title("SIS model")
 
-if equilib_exists
- equilibPlot = plot(equilib_t, equilib_val);
- set(equilibPlot, 'Marker', 'o')
- equilibPlot.MarkerSize=10;
- equilibPlot.MarkerEdgeColor = [0.85 0.47 0.32]; % Marker outside boundaries color
- equilibPlot.MarkerFaceColor = [0.1 0.25 0.89];
+if endemic_ratio <1
+    endemic_I = 1 -endemic_ratio;
+    endemic_I_point = find(I==endemic_I,1,"first");
+    endemic_t = t(endemic_I_point);
+    endem
+
 end
 
-xlabel('t')
+    
+    
+%end
+
+
+
+title("SIS model", Interpreter='latex');
+
+%if equilib_exists == 0
+ %equilibPlot = plot(equilib_t, equilib_val);
+ %set(equilibPlot, 'Marker', 'o')
+ %equilibPlot.MarkerSize=10;
+ %equilibPlot.MarkerEdgeColor = [0.85 0.47 0.32];
+ %equilibPlot.MarkerFaceColor = [0.1 0.25 0.89];
+%end
+xlabel('time $t$ (months)', Interpreter='latex')
+legend(leg, 'Orientation','horizontal', 'Location', 'southwestoutside', NumColumns=number_of_columns, Interpreter='latex')
 
 
 

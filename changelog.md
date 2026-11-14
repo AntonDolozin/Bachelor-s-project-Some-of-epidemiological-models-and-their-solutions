@@ -37,3 +37,28 @@ All notable changes to this project will be documented here.
 -sis/main.m
  -Fixed a bug with getting y0 (vector of initial conditions) and t0 (time span, on which the solution should be found).
 
+##[2026-4] - 2026-11-13
+#Changed
+-sis/main.m
+ -Fixed bugged function handle for system of DEs.
+ -Added basic plots.
+ -Created a table with results 
+
+##[2026-5] - 2026-11-14
+#Changed
+-sis/main.m
+ -Fixed bugged value calculation for I(t) and S(t) 
+ -Changed the vector of initial conditions y0. Now the script requests only I(0) from user, as S(0) can be calculated as 1 - I(0).
+ -Added validators and constraints for constants gamma and beta.
+ -Improved plots (added legend, title, xlabel, changed text interpreter to LaTeX).
+
+#Added
+-data/covid/load_data.m
+ -A script for loading a table of Covid-19 data (not functional as of now).
+-data/hiv/load_data.m
+ -A script for loading a table of HIV data (not functional as of now).
+-report/matlab/systems_des.tex
+ -A report on methods of solving the systems of DEs in MATLAB.
+
+
+
