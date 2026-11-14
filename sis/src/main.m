@@ -96,13 +96,15 @@ iplot.LineWidth =3;
 IColorCode = [0.9804, 0.7843, 0.5961];
 iPlot.Color=IColorCode;
 
-if endemic_ratio <1
-    endemic_I = 1 -endemic_ratio;
-    endemic_I_point = find(I==endemic_I,1,"first");
-    endemic_t = t(endemic_I_point);
-    endemicEqPlot = plot()
+%if endemic_ratio <1
+   % endemic_I = 1 -endemic_ratio;
+   % endemic_I_point = find(I==endemic_I,1,"first");
+   % endemic_t = t(endemic_I_point);
+  %  endemicEqPlot = plot(endemic_t, endemic_I_point);
+  %  set(endemicEqPlot, 'Marker', 'o');
+  %  endemicEqPlot.MarkerEdgeColor = [0.85 0.47 0.32];
 
-end
+%end
 
     
     

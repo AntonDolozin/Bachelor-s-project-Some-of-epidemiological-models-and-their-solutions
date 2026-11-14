@@ -100,7 +100,7 @@ if endemic_ratio <1
     endemic_I = 1 -endemic_ratio;
     endemic_I_point = find(I==endemic_I,1,"first");
     endemic_t = t(endemic_I_point);
-    endem
+    endemicEqPlot = plot(endemic_t, endemic_I_point);
 
 end
 
