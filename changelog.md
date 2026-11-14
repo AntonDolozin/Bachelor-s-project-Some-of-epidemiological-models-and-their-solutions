@@ -60,5 +60,13 @@ All notable changes to this project will be documented here.
 -report/matlab/systems_des.tex
  -A report on methods of solving the systems of DEs in MATLAB.
 
+##[2026-6] - 2026-11-14
+#Changed
+-sis/main.m
+ -Added graphs for derivatives of I(t) and S(t), marked the endemic equilibrium.
+
+
+
+
 
 
