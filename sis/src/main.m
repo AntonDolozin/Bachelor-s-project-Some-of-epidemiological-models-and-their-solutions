@@ -56,6 +56,7 @@ endemic_ratio = g_converted/b_converted;
 [t, y] = ode45(@(t, A, beta, gamma)odefun(t, A, b_converted, g_converted), time, y0);
 
 
+
 %Extracting the values of each function
 S = y(:, 1);
 I = y(:, 2);
@@ -80,7 +81,15 @@ number_of_columns = numel(leg);
 
 %Opening figure for plots 
 main_figure =figure;
+picture_width = 20;
+height_ratio =0.65;
+
+set(main_figure,'Units','centimeters','Position',[3 3 picture_width height_ratio*picture_width]);
+pos = get(main_figure,'Position');
+set(findall(main_figure, '-property', 'Interpreter'), 'Interpreter', 'latex');
 set(findall(main_figure, '-property', 'TickLabelInterpreter'), 'TickLabelInterpreter', 'latex');
+set(findall(main_figure, '-property', 'Box'), 'Box', 'off');
+set(main_figure,'PaperPositionMode','Auto','PaperUnits','centimeters','PaperSize',[pos(3), pos(4)]);
 hold on;
 sPlot =plot(t, S);
 iPlot = plot(t, I);
