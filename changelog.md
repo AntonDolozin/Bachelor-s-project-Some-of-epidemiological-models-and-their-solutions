@@ -65,6 +65,12 @@ All notable changes to this project will be documented here.
 -sis/main.m
  -Added graphs for derivatives of I(t) and S(t), marked the endemic equilibrium.
 
+##[2026-7] - 2026-11-14/15
+#Changed
+-report/matlab/systems_des.tex
+ -Written a report purely on MATLAB. Wanted to add a theoretical background at least on Euler's method, it seems to be beyond the scope of the work however.
+
+
 
 
 
