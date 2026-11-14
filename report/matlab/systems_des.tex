@@ -1,0 +1,104 @@
+\documentclass[10pt]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{xcolor}
+\usepackage{listings}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\title{\bf{Solving systems of differential equations with MATLAB}}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,
+	breaklines=true,
+	captionpos=b,
+	keepspaces=true,
+	numbers=left,
+	numbersep=5pt,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	tabsize=2
+}
+\lstset{style=mystyle}
+
+\author{Anton Dolozin}
+\date{}
+\begin{document}
+\pagestyle{empty}
+\maketitle
+\newpage
+\section*{Symbolical solutions}
+\bigskip
+Systems of differential equations can be solved {\underline{analytically}}, using a built-in  {\emph{dsolve}}. Applied when the exact formula for each  function is needed. Unfortunately,  {\emph{dsolve}} cannot solve the more complex systems that are not {\underline{linear}}.
+\bigskip
+\subsection*{Example 1.}
+\begin{lstlisting}[language=Matlab, caption={An example of system with analytic solution}]
+%Symbolically defning functions
+syms x(t), syms y(t)
+
+eqns = [diff(x, t) ==-3*x +4*y, diff(y,t)==-2*x +3*y];
+
+
+initial_conditions = [x(0) ==1, y(0) == 2];
+
+
+solution = dsolve(eqns, initial_conditions);
+
+\end{lstlisting}
+\medskip
+In our case, this approach may be used for finding the solutions for {\bf{SIR}} epidemiological model.
+\bigskip
+\bigskip
+\bigskip
+
+\section*{Numerical solutions}
+\bigskip
+Let's consider the following system of differential equations:
+ \begin{eqnarray}
+ y^\prime_1 =y_2 \nonumber \\
+ y^\prime_2 =\mu(1-y^2_1)y_2 - y_1 \nonumber
+ \end{eqnarray}
+ 
+This is a rewritten version of the van der Pol ODEs. It is not possible to easily find an analytical solution for systems like that. On such occasions, one must use the numerical methods, usually ones form {\underline{Runge-Kutta}} family. In MATLAB, they are represented by: \begin{enumerate}
+	\item {\emph{ode45}} -  recommended and the most popular one.  Uses Runge-Kutta 0f degree 5 and 4. Works on most non-stiff problems.
+	\item {\emph{ode23}} - used when moderate stifness is present or when tolerance is more crude.
+	\item  {\emph{ode78}} - employed on non-stiff problems with smooth solutions.
+	\item {\emph{ode15s}} - used when {\emph{ode45}} fails or if  it is inefficient and one suspects that the problem might be stiff.
+\end{enumerate}
+
+\subsection*{Example 2. Definition of systems of ODEs in MATLAB for numerical methods }
+
+{\emph{ode45}} requires a function handle, as well as vectors for intitial conditions and timespan. The system of differential equations will be written as an anonymous function that returns a {\underline{vector of derivatives}}.
+
+\begin{lstlisting}[language=Matlab, caption={An example of system with numerical solutions for system with three unknown functions}]
+%Interval of integration
+tspan = [0 15] ;
+%Initial conditions
+y0 = [5; 2; 8];
+
+[t, y] = ode45(@foo, tspan, y0);
+
+
+function dydt = foo(t, y)
+        dydt = zeros(3,1)
+        dydt(1)=0.2*y(1)*y(3) -0.05*y(1)*y(2)
+        dydt(2) = -0.3*y(2) + 0.5*y(3)*y(1)
+        dydt(3) = 1.5*y(3)*y(2) +4*y(1)
+
+	
+	
+\end{lstlisting}
+
+
+
+
+
+\end{document}
