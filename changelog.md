@@ -71,8 +71,14 @@ All notable changes to this project will be documented here.
  -Written a report purely on MATLAB. Wanted to add a theoretical background at least on Euler's method, it seems to be beyond the scope of the work however.
 
 
+##[2026-8] - 2026-11-19
+#Fixed
+-sis/src/main.m
+ -Typo in variable name (`iplot` -> `iPlot`): line width of I(t) is now applied.
+ -Input prompts now say "strictly between 0 and 1", matching the asserts. Added checks after sscanf for beta, gamma and I(0), so non-numeric input gives an assert message instead of a crash. Fixed misplaced parenthesis in the gamma assert.
+ -Time span input accepts "0,10", "0 10", "0, 10" and "[0 10]". Wrong format gives a clear error message instead of an index-out-of-bounds error.
 
-
-
-
+#Added
+-sis/src/main.m
+ -Horizontal line at the theoretical endemic equilibrium I* = 1 - gamma/beta (the existing marker at the last point was left as it was).
 

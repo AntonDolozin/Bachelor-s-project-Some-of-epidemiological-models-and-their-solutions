@@ -20,31 +20,38 @@ close all;
 
 %initial conditions 
 results_table = table();
-time_span = input('Enter a timespan (two values): \n', 's');
-b = input('Enter beta parameter for system of differential equations: (Nonzero, within [0,1] interval) \n', 's');
-g = input('Enter gamma parameter for system of differential equations: (Nonzero, within [0,1] interval) \n', 's');
-I0 = input('Enter initial condition for function of infected I(t) (between 0 and 1): \n', 's');
+time_span = input('Enter a timespan (two numbers, e.g. 0,100 or 0 100): \n', 's');
+b = input('Enter beta parameter for system of differential equations: (strictly between 0 and 1) \n', 's');
+g = input('Enter gamma parameter for system of differential equations: (strictly between 0 and 1) \n', 's');
+I0 = input('Enter initial condition for function of infected I(t) (strictly between 0 and 1): \n', 's');
 
 %Remaining code from previous commits;
 %dAdt = @(t, A, b, gamma) [-b*A(2)*A(1) + gamma*A(2); b*A(1)*A(2) - gamma*A(2)]
 %[t, A] = ode45(dAdt, [2, 3], [25; 6]);
 %------------------------------------
 time = zeros(2, 1);
-tmp = sscanf(time_span, '%f,%f');
+%Commas, semicolons and square brackets are replaced by spaces, so
+%"0,10", "0 10", "0, 10" and "[0 10]" are all accepted
+time_clean = regexprep(time_span, '[\[\],;]', ' ');
+tmp = sscanf(time_clean, '%f');
+assert(numel(tmp) == 2, 'Time span must contain exactly two numbers, e.g. 0,100 or 0 100.');
 
 time(1) = tmp(1);
 time(2) = tmp(2);
 tmp_I0  = sscanf(I0, '%f');
+assert(isscalar(tmp_I0), 'Initial condition must be a single number.');
 S0 = 1- tmp_I0;
 y0= zeros(2, 1);
 y0(1) = S0;
 y0(2) = tmp_I0;
 b_converted = sscanf(b, '%f');
 g_converted = sscanf(g, '%f');
+assert(isscalar(b_converted), 'Beta must be a single number.');
+assert(isscalar(g_converted), 'Gamma must be a single number.');
 
 %Validating values from user
 assert((0<b_converted)&&(b_converted<1), 'Beta must be between 0 and 1.');
-assert((0<g_converted) &&(g_converted)<1, 'Gamma must be between 0 and 1.');
+assert((0<g_converted) && (g_converted<1), 'Gamma must be between 0 and 1.');
 assert((0<y0(1)) &&(y0(1)<1), 'Initial condition must be between 0 and 1.');
 assert(time(1)<time(2), 'Lower boundary of time span should be lesser than upper boundary.')
 
@@ -103,7 +110,7 @@ sPlot.Color =SColorCode;
 
 %Setting up the plot for I(t)
 iPlot.LineStyle = '-';
-iplot.LineWidth =2;
+iPlot.LineWidth =2;
 IColorCode = [0.9804, 0.7843, 0.5961];
 iPlot.Color=IColorCode;
 
@@ -121,6 +128,14 @@ iPrimePlot.LineWidth = 1;
 IPrimeColorCode = [217, 107, 107]./255;
 iPrimePlot.Color = IPrimeColorCode;
 
+
+%Theoretical endemic equilibrium I* = 1 - gamma/beta as a horizontal line
+if endemic_ratio <1
+    endemicLinePlot = plot([t(1), t(end)], [1 - endemic_ratio, 1 - endemic_ratio]);
+    endemicLinePlot.LineStyle = ':';
+    endemicLinePlot.LineWidth = 1.5;
+    endemicLinePlot.Color = [0.85 0.47 0.32];
+end
 
 if endemic_ratio <1
     endemic_I =I(end);
